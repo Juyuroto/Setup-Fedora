@@ -8,18 +8,16 @@
 
 ## Aperçu
 
-<h3 align="center">📸 Mon setup en action</h3>
+<h3 align="center">Mon setup en action</h3>
 
 <table>
   <tr>
-    <td align="center"><img src="screen/accueil.png" width="380"/><br/><sub>Bureau</sub></td>
-    <td align="center"><img src="screen/GNOME.png" width="380"/><br/><sub>Bureau GNOME</sub></td>
-    <td align="center"><img src="screen/app.png" width="380"/><br/><sub>Application</sub></td>
+    <td align="center"><img src="screenshots/desktop.png" width="380"/><br/><sub>Bureau GNOME</sub></td>
+    <td align="center"><img src="screenshots/tmux.png" width="380"/><br/><sub>Terminal tmux</sub></td>
   </tr>
   <tr>
-    <td align="center"><img src="screen/terminal.png" width="380"/><br/><sub>Terminal tmux</sub></td>
-    <td align="center"><img src="screen/lock-screen.png" width="380"/><br/><sub>Lock-Screen with Face-ID</sub></td>
-    <td align="center"><img src="screen/google-drive.png" width="380"/><br/><sub>Google Drive</sub></td>
+    <td align="center"><img src="screenshots/nvidia-smi.png" width="380"/><br/><sub>nvidia-smi</sub></td>
+    <td align="center"><img src="screenshots/apps.png" width="380"/><br/><sub>Applications</sub></td>
   </tr>
 </table>
 
@@ -122,27 +120,29 @@ nano ~/.tmux.conf
 ```
 
 ```
-# Souris pour cliquer entre les panneaux
 set -g mouse on
-
-# Cacher la barre de statut
 set -g status off
-
-# Couleurs des bordures
 set -g pane-border-style fg=#89b4fa
 set -g pane-active-border-style fg=#f38ba8,bold
 
-# Raccourcis
-bind -n C-v split-window -h        # Nouveau panneau vertical
-bind -n C-h split-window -v        # Nouveau panneau horizontal
+bind -n C-v run-shell "tmux split-window -h -c \"$(tmux show-environment TMUX_PWD 2>/dev/null | cut -d= -f2 || echo $HOME)\""
+bind -n C-h run-shell "tmux split-window -v -c \"$(tmux show-environment TMUX_PWD 2>/dev/null | cut -d= -f2 || echo $HOME)\""
 bind -n C-w if-shell "[ $(tmux list-panes | wc -l) -gt 1 ]" "kill-pane" "display-message 'Impossible de fermer le dernier panneau!'"
 ```
 
-Pour que tmux se lance automatiquement à l'ouverture du terminal, ajoute ça dans `~/.zshrc` :
+Les nouveaux panneaux héritent du path actuel, et le dernier panneau ne peut pas être fermé.
+
+Pour que tmux se lance automatiquement et démarre sur `/home/alain`, ajoute ça dans `~/.zshrc` :
 
 ```bash
+# Sync le path courant avec tmux à chaque prompt
+precmd() {
+    [ -n "$TMUX" ] && tmux setenv TMUX_PWD "$PWD"
+}
+
+# Lancer tmux automatiquement au démarrage du terminal
 if [ -z "$TMUX" ]; then
-    tmux attach-session -t default 2>/dev/null || tmux new-session -s default
+    tmux new-session -A -s default -c /home/alain
 fi
 ```
 

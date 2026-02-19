@@ -174,9 +174,14 @@ bindkey '^[[A' history-substring-search-up
 bindkey '^[[B' history-substring-search-down
 bindkey '^[[C' autosuggest-accept
 
-# Tmux auto-launch
+# Sync le path courant avec tmux à chaque prompt
+precmd() {
+    [ -n "$TMUX" ] && tmux setenv TMUX_PWD "$PWD"
+}
+
+# Lancer tmux automatiquement au démarrage du terminal
 if [ -z "$TMUX" ]; then
-    tmux attach-session -t default 2>/dev/null || tmux new-session -s default
+    tmux new-session -A -s default -c /home/$USERNAME
 fi
 EOF
 
@@ -192,8 +197,9 @@ set -g mouse on
 set -g status off
 set -g pane-border-style fg=#89b4fa
 set -g pane-active-border-style fg=#f38ba8,bold
-bind -n C-v split-window -h
-bind -n C-h split-window -v
+
+bind -n C-v run-shell "tmux split-window -h -c \"$(tmux show-environment TMUX_PWD 2>/dev/null | cut -d= -f2 || echo $HOME)\""
+bind -n C-h run-shell "tmux split-window -v -c \"$(tmux show-environment TMUX_PWD 2>/dev/null | cut -d= -f2 || echo $HOME)\""
 bind -n C-w if-shell "[ $(tmux list-panes | wc -l) -gt 1 ]" "kill-pane" "display-message 'Impossible de fermer le dernier panneau!'"
 EOF
 print_ok "Tmux configuré"
