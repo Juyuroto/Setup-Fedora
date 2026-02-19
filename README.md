@@ -15,7 +15,14 @@ Ce guide regroupe tout ce que j'ai fait pour avoir un Fedora propre, optimisé e
 
 ## Installation automatique
 
-Clone le repo et lance le script :
+Clone le repo :
+
+```bash
+git clone https://github.com/ton_user/fedora-setup.git
+cd fedora-setup
+```
+
+lance le script :
 
 ```bash
 chmod +x install.sh

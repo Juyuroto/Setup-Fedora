@@ -298,3 +298,10 @@ echo -e "  2. Ajouter le raccourci F4 pour le rétroéclairage dans Paramètres 
 echo -e "  3. Vérifier les drivers NVIDIA : ${CYAN}nvidia-smi${NC}"
 echo ""
 echo -e "${CYAN}Lance un reboot pour finaliser !${NC}"
+
+echo -e "\nTu veux supprimer le dossier d'installation ? (o/n)"
+read response
+if [ "$response" = "o" ]; then
+    cd .. && rm -rf fedora-setup
+    echo "Dossier supprimé !"
+fi
