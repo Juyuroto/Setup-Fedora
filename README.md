@@ -1,15 +1,31 @@
 # Mon setup Fedora — Guide complet
 
-Ce guide regroupe tout ce que j'ai fait pour avoir un Fedora propre, optimisé et agréable à utiliser sur un ASUS ProArt P16 (AMD Ryzen 9 + RTX 4070). La majorité des étapes sont automatisées via le script `install.sh` fourni avec ce guide. Il suffit de le lancer et il fait tout tout seul. Il reste quelques petites choses à faire à la main après, elles sont listées à la fin.
+![Made for Fedora 43](https://img.shields.io/badge/Made%20for-Fedora%2043-294172?style=for-the-badge&logo=fedora&logoColor=white)
+![RTX](https://img.shields.io/badge/NVIDIA-RTX%20-76b900?style=for-the-badge&logo=nvidia&logoColor=white)
+![Epitech](https://img.shields.io/badge/Epitech-Student-003366?style=for-the-badge)
 
 ---
 
-## Prérequis matériel
+## Aperçu
 
-- ASUS ProArt P16
-- AMD Ryzen 9 370HX
-- NVIDIA RTX 4070 Mobile (Max-Q)
-- Fedora 43 installé
+<h3 align="center">📸 Mon setup en action</h3>
+
+<table>
+  <tr>
+    <td align="center"><img src="screen/accueil.png" width="380"/><br/><sub>Bureau</sub></td>
+    <td align="center"><img src="screen/GNOME.png" width="380"/><br/><sub>Bureau GNOME</sub></td>
+    <td align="center"><img src="screen/app.png" width="380"/><br/><sub>Application</sub></td>
+  </tr>
+  <tr>
+    <td align="center"><img src="screen/terminal.png" width="380"/><br/><sub>Terminal tmux</sub></td>
+    <td align="center"><img src="screen/lock-screen.png" width="380"/><br/><sub>Lock-Screen with Face-ID</sub></td>
+    <td align="center"><img src="screen/google-drive.png" width="380"/><br/><sub>Google Drive</sub></td>
+  </tr>
+</table>
+
+---
+
+Ce guide regroupe tout ce que j'ai fait pour avoir un Fedora propre, optimisé et agréable à utiliser sur un ASUS ProArt P16 (AMD Ryzen 9 + RTX 4070). La majorité des étapes sont automatisées via le script `install.sh` fourni avec ce guide. Il suffit de le lancer et il fait tout tout seul. Il reste quelques petites choses à faire à la main après, elles sont listées à la fin.
 
 ---
 
@@ -22,7 +38,7 @@ git clone https://github.com/ton_user/fedora-setup.git
 cd fedora-setup
 ```
 
-lance le script :
+Lance le script :
 
 ```bash
 chmod +x install.sh
@@ -87,7 +103,7 @@ Vérifie que tout fonctionne :
 nvidia-smi
 ```
 
-Tu devrais voir ta RTX ... avec le driver version ...
+Tu devrais voir ta RTX avec la version du driver.
 
 ---
 
@@ -354,7 +370,68 @@ sudo usermod -aG wireshark $USER
 
 ---
 
-### 12. Personnalisation GNOME
+### 12. Reconnaissance faciale — Howdy
+
+Howdy est un système de reconnaissance faciale style Windows Hello pour Linux. Il permet de déverrouiller la session GNOME avec ton visage.
+
+```bash
+# Dépendances
+sudo dnf install -y cmake gcc gcc-c++ python3-devel meson ninja-build \
+  python3-opencv python3-numpy inih-devel libevdev-devel pam-devel
+
+# Installation dlib
+pip3 install dlib --break-system-packages
+
+# Cloner et compiler Howdy
+git clone https://github.com/boltgolt/howdy ~/howdy
+cd ~/howdy
+sudo meson setup build
+sudo ninja -C build install
+
+# Télécharger les modèles dlib
+sudo mkdir -p /usr/local/share/dlib-data
+cd /usr/local/share/dlib-data
+sudo curl -LO http://dlib.net/files/shape_predictor_5_face_landmarks.dat.bz2
+sudo bzip2 -d shape_predictor_5_face_landmarks.dat.bz2
+sudo curl -LO http://dlib.net/files/mmod_human_face_detector.dat.bz2
+sudo bzip2 -d mmod_human_face_detector.dat.bz2
+sudo curl -LO http://dlib.net/files/dlib_face_recognition_resnet_model_v1.dat.bz2
+sudo bzip2 -d dlib_face_recognition_resnet_model_v1.dat.bz2
+
+# Lien symbolique PAM
+sudo ln -s /usr/local/lib64/security/pam_howdy.so /lib64/security/pam_howdy.so
+
+# Autoriser howdy dans SELinux
+sudo semanage permissive -a xdm_t
+```
+
+Configure la webcam (remplace `video0` si besoin) :
+```bash
+sudo howdy config
+# Mets : device_path = /dev/video0
+```
+
+Enregistre ton visage :
+```bash
+sudo howdy add
+```
+
+Active dans PAM pour le déverrouillage GNOME :
+```bash
+sudo bash -c 'sed -i "1s/^/auth        sufficient    pam_howdy.so\n/" /etc/pam.d/gdm-password'
+```
+
+Commandes utiles :
+```bash
+sudo howdy test      # Tester la reconnaissance
+sudo howdy list      # Voir les profils
+sudo howdy add       # Ajouter un profil
+sudo howdy remove ID # Supprimer un profil
+```
+
+---
+
+### 13. Personnalisation GNOME
 
 ```bash
 sudo dnf install -y gnome-tweaks
@@ -399,7 +476,7 @@ Après le reboot :
 nvidia-smi
 ```
 
-Tu devrais voir ta RTX avec ton driver. Si ce n'est pas le cas, relis la section drivers NVIDIA ci-dessus.
+Tu devrais voir ta RTX avec la version du driver. Si ce n'est pas le cas, relis la section drivers NVIDIA ci-dessus.
 
 ### 3. Configurer Google Drive
 
