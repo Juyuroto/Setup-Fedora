@@ -12,12 +12,14 @@
 
 <table>
   <tr>
-    <td align="center"><img src="screenshots/desktop.png" width="380"/><br/><sub>Bureau GNOME</sub></td>
-    <td align="center"><img src="screenshots/tmux.png" width="380"/><br/><sub>Terminal tmux</sub></td>
+    <td align="center"><img src="screen/accueil.png" width="380"/><br/><sub>Bureau</sub></td>
+    <td align="center"><img src="screen/GNOME.png" width="380"/><br/><sub>TBureau GNOME/sub></td>
+    <td align="center"><img src="screen/lock-screen.png" width="380"/><br/><sub>Lock-Screen with Face-ID</sub></td>
   </tr>
   <tr>
-    <td align="center"><img src="screenshots/nvidia-smi.png" width="380"/><br/><sub>nvidia-smi</sub></td>
-    <td align="center"><img src="screenshots/apps.png" width="380"/><br/><sub>Applications</sub></td>
+    <td align="center"><img src="screen/app.png" width="380"/><br/><sub>Application</sub></td>
+    <td align="center"><img src="screen/terminal.png" width="380"/><br/><sub>Terminal tmux</sub></td>
+    <td align="center"><img src="screen/google-drive.png" width="380"/><br/><sub>Google-Drive</sub></td>
   </tr>
 </table>
 
